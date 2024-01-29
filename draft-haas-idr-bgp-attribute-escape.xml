@@ -13,7 +13,7 @@
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
   category="info"
-  docName="draft-haas-idr-bgp-attribute-escape-00"
+  docName="draft-haas-idr-bgp-attribute-escape-01"
   ipr="trust200902"
   obsoletes=""
   updates=""
@@ -25,7 +25,7 @@
     <title abbrev="BGP Attribute Escape">BGP Attribute Escape</title>
     <!--  The abbreviated title is required if the full title is longer than 39 characters -->
 
-    <seriesInfo name="Internet-Draft" value="draft-haas-idr-bgp-attribute-escape-00"/>
+    <seriesInfo name="Internet-Draft" value="draft-haas-idr-bgp-attribute-escape-01"/>
    
     <author fullname="Jeffrey Haas" initials="J." surname="Haas">
     <!-- initials should not include an initial for the surname -->
@@ -46,7 +46,7 @@
       </address>
     </author>
    
-    <date year="2023"/>
+    <date year="2024"/>
 
     <area>Routing</area>
     <workgroup>Inter-Domain Routing</workgroup>
@@ -81,7 +81,7 @@
     <section>
     <!-- The default attributes for <section> are numbered="true" and toc="default" -->
       <name>Introduction</name>
-      <t>Introductory text</t>
+      <!-- XXX JMH - clone the abstract here? -->
       
       <section anchor="requirements">
         <name>Requirements Language</name>
@@ -98,7 +98,7 @@
       <name>BGP Path Attributes and Transitivity</name>
       <t>
         BGP-4 <xref target="RFC4271"/> carries routing information in UPDATE
-        messages.  BGP UPDATEs pair set of network layer reachability
+        messages.  BGP UPDATEs pair sets of network layer reachability
         information (NLRI), i.e. destinations, with properties for those
         destinations.  Those properties are carried in Path Attributes 
         (<xref target="RFC4271" section="4.3"/>).  The BGP-4 RFC defines a
@@ -108,7 +108,7 @@
       <t>
         Optional Path Attributes are flagged to be either "transitive" or
         "non-transitive".  This flag controls how a BGP implementation that
-        does not recognize a Path Attribute will handle them.  In particular,
+        does not recognize a Path Attribute will handle it.  In particular,
         unrecognized non-transitive Path Attributes, "MUST be quietly ignored
         and not passed along to other BGP peers".  However, if the attribute
         is non-transitive but recognized, the procedures documented for that
@@ -174,7 +174,7 @@
         <name>Attribute Scoping</name>
         <t>
           Propagation scope is typically described as part of a BGP protocol
-          extension's procedure.  A common scoping boundary is intra-AS
+          extension's procedures.  A common scoping boundary is intra-AS
           only; for example, drop at eBGP boundaries. BGP Capabilities <xref
           target="RFC5492"/> can also provide the ability to signal a
           scoping boundary.  Another implicit scoping boundary are features
@@ -205,25 +205,25 @@
         </t>
         <t>
           A first example of escape are Path Attributes for new features that are
-          intended to be dropped at eBGP boundaries. That is, the feature
+          intended to be dropped at eBGP boundaries. That is, the feature is
           intra-AS only.  An example of such expected filtering is the BGP
           Tunnel Encapsulation Attribute (TEA)
           (<xref target="RFC9012" section="11"/>).  BGP speakers
           implementing this feature are expected to remove the TEA when
           sending routes to eBGP speakers by default.  However, if a BGP
           speaker that is an eBGP router doesn't understand the TEA, it
-          can't do this filtering.  Similarly, the procedures recommend that
-          at an eBGP boundary that received routes remove the TEA by
-          default.  In such cases, if the eBGP speaker doesn't understand
+          can't do this filtering.  Similarly, the procedures recommend the TEA
+          is removed by default at eBGP boundaries.
+          In such cases, if the eBGP speaker doesn't understand
           the TEA, it won't be removed there either.  When both failures
-          happen, and if it's the case that an AS receives from another AS
-          routes with the TEA, it may inadvertently use that TEA within
-          their network.
+          happen, and if it's the case that an AS receives routes with the TEA
+          from another AS the receiving AS may inadvertently use that TEA
+          within their network.
         </t>
         <t>
           A second example of escape is when attributes are expected to
           change at next hop reset boundaries.  While this is typically the
-          case at eBGP boundaries, this could be elsewhere within a network
+          case for eBGP, this could be done elsewhere within a network
           by configuration.  One example of this is the BGP Entropy Label
           feature <xref target="RFC6790"/>.  A second example is the BGP
           Prefix-SID feature <xref target="RFC8669"/>.
@@ -250,11 +250,11 @@
           BGP Communities of various forms (<xref target="RFC1997"/>, 
           <xref target="RFC4360"/>, <xref target="RFC8092"/>) are often
           arbitrary operator-supplied route markup intended to have local or
-          closely coordinated significance.  RFC 1997 communities provide
+          closely coordinated significance.  RFC 1997 provides
           for a small set of well-known communities that have impact on BGP
-          route scoping, and are reasonably well-respected among various
+          route scoping, and are reasonably well-respected by various
           implementations.  RFC 1997 and RFC 8092 Large BGP communities
-          often are distributed further than necessary and in most
+          often are distributed further than necessary, and in most
           circumstances simply contribute to "operational clutter".
         </t>
         <t>
@@ -283,16 +283,16 @@
 
         <t>
           One of the main, and typically accidental impacts of attribute
-          escape are BGP speakers that have received such escaped attributes
+          escape, are BGP speakers that have received such escaped attributes
           and make use of them.  In some cases, these are features that
-          require explicit configuration to use.  In many cases, BGP
+          require explicit configuration to be used.  In many cases, BGP
           implementations will simply process received attributes and make
           use of them without additional configuration.
         </t>
         <t>
           Such inadvertent use can have unexpected impacts on a network.
-          This can be unexpected route selection, or mis-routed traffic.
-          Another case may be traffic that blackholes.
+          Impacts may include unexpected route selection, mis-routed traffic,
+          or traffic that blackholes.
         </t>
         <t>
           Such behaviors may be maliciously exploited.
@@ -304,8 +304,8 @@
 
         <t>
           While transitive Path Attributes have proved that BGP's extension
-          mechanisms has done well over the years, they've also provided the
-          vehicle for network incidents and outages.  A particular form of
+          mechanisms have done well over the years, they've also provided the
+          vehicle for network incidents and outages.  One form of
           this is when an implementation of a partially deployed feature
           receives a malformed transitive Path Attribute from a BGP speaker
           that didn't understand that attribute.  The author has previously
@@ -317,12 +317,13 @@
           receiving BGP speaker.  Using core RFC 4271 procedures, such a
           malformed Path Attribute is reason to reset the BGP session. 
           (<xref target="RFC4271" section="6.3"/>)  However, since the BGP
-          neighbor that propagated the route may not have been the
-          originator of that attribute, this penalizes the BGP neighbor.
+          speaker that propagated the route may not have been the
+          originator of that attribute, this penalizes the BGP speaker that
+          propagated the route.
         </t>
 
         <t>
-          In far more unfortunate circumstances such malformed attributes
+          In far more unfortunate circumstances, such malformed attributes
           may exercise defects in the BGP stack and cause crashes.  These
           crashes impacts the entire BGP speaker rather than individual
           sessions.  Such issues may be maliciously exploited.
@@ -361,7 +362,7 @@
           features.  This struggle is a common one for users in firewalled
           networks where attempts to use new features are thwarted by the
           operators.  However, in this case, this can impact deployment of
-          desirable new features for the Internet.  Consider, for example, 
+          desirable new BGP features for the Internet.  Consider, for example, 
           <xref target="RFC9234"/> which is intended to provide additional
           protection vs. BGP route leaking.  Aggressive filtering may
           prevent such new features from being deployed.
@@ -386,14 +387,14 @@
           where filtering should be done and how.  (See again the example
           for the Tunnel Encapsulation Attribute, 
           <xref target="RFC9012" section="11"/>.)  It is important that
-          implementors and vendors translate these filtering requirements as
+          implementors and vendors translate these filtering requirements into
           easy to configure mechanisms for enforcement.
         </t>
         <t>
           Current IETF practice is to include an Operational Considerations
           (<xref target="RFC5706"/>) section in its documents. Such
           considerations are a hint (or requirement!) to implementors to
-          create mechanisms that permit for safe management for features.
+          create mechanisms that permit safe management of features.
           This is especially true during incremental or partial deployment
           of new features.
         </t>
@@ -427,14 +428,14 @@
             they may wish to trust for utilizing such new features.  This
             can permit a single "scope AS" to be included in the feature
             with a set of cooperating providers using different ASes able to
-            such routes.
+            enforce the scoping of such routes.
           </t>
           <t>
-            Implementations of such AS-Scoped features SHOULD have mechanism
+            Implementations of such AS-Scoped features SHOULD have mechanisms
             that permit filtering of the feature's Path Attributes at AS
             boundaries.  While the scoping-AS described above can help avoid
-            issues with inadvertent usage, it can't help vs. actual
-            malicious exploit where the scoping-AS is spoofed.
+            issues with inadvertent usage, it can't help vs. intentional
+            malicious exploitation where the scoping-AS is spoofed.
           </t>
           <t>
             The BGP Wide Communities feature
@@ -450,7 +451,7 @@
             Some BGP features rely on their semantics based on when the next
             hop of the route has been changed.  In circumstances where the
             feature is only correct at such boundaries, embedding the "last
-            set nexthop" can be used to detect when a Path Attribute has
+            set next hop" can be used to detect when a Path Attribute has
             propagated past a device that has reset the next hop without the
             associated change to the feature.
           </t>
@@ -550,7 +551,7 @@
     
     <section anchor="Acknowledgements" numbered="false">
       <name>Acknowledgements</name>
-      <t>TBD</t>
+      <t>Thanks to Greg Skinner for suggested edits on the document.</t>
     </section>
     
     <section anchor="Contributors" numbered="false">
