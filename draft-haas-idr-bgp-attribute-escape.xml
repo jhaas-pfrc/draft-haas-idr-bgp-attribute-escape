@@ -62,7 +62,7 @@
 
       <t>Unfortunately, this blind propagation of unknown Path Attributes
       may happen for features that are intended to be used in a limited
-      scope.  When such Path Attributes inadvertantly are carried beyond
+      scope.  When such Path Attributes inadvertently are carried beyond
       that scope, it can lead to things such as unintended disclosure of
       sensitive information, or cause improper routing.  In their worst
       cases, such propagation may be for malformed Path Attributes and lead
@@ -267,7 +267,7 @@
           The majority of RFC 4360 BGP Extended Communities in use tend to
           be for features related to VPN-feature signaling.  Extended
           Communities have their own internal transitivity scoping, which is
-          intened to be enforced at AS boundaries.  However, such
+          intended to be enforced at AS boundaries.  However, such
           enforcement can only be implemented by BGP speakers that
           understand Extended Communities.
         </t>
@@ -426,7 +426,7 @@
             as part of their configuration a list of non-local ASes that
             they may wish to trust for utilizing such new features.  This
             can permit a single "scope AS" to be included in the feature
-            with a set of coopertaing providers using different ASes able to
+            with a set of cooperating providers using different ASes able to
             such routes.
           </t>
           <t>
