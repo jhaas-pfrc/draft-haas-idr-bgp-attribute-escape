@@ -13,7 +13,7 @@
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
   category="info"
-  docName="draft-haas-idr-bgp-attribute-escape-02"
+  docName="draft-haas-idr-bgp-attribute-escape-03"
   ipr="trust200902"
   obsoletes=""
   updates=""
@@ -25,7 +25,7 @@
     <title abbrev="BGP Attribute Escape">BGP Attribute Escape</title>
     <!--  The abbreviated title is required if the full title is longer than 39 characters -->
 
-    <seriesInfo name="Internet-Draft" value="draft-haas-idr-bgp-attribute-escape-02"/>
+    <seriesInfo name="Internet-Draft" value="draft-haas-idr-bgp-attribute-escape-03"/>
    
     <author fullname="Jeffrey Haas" initials="J." surname="Haas">
     <!-- initials should not include an initial for the surname -->
@@ -46,7 +46,7 @@
       </address>
     </author>
    
-    <date year="2024"/>
+    <date year="2025"/>
 
     <area>Routing</area>
     <workgroup>Inter-Domain Routing</workgroup>
