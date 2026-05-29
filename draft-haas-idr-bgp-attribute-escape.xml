@@ -13,7 +13,7 @@
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
   category="info"
-  docName="draft-haas-idr-bgp-attribute-escape-03"
+  docName="draft-haas-idr-bgp-attribute-escape-04"
   ipr="trust200902"
   obsoletes=""
   updates=""
@@ -25,7 +25,7 @@
     <title abbrev="BGP Attribute Escape">BGP Attribute Escape</title>
     <!--  The abbreviated title is required if the full title is longer than 39 characters -->
 
-    <seriesInfo name="Internet-Draft" value="draft-haas-idr-bgp-attribute-escape-03"/>
+    <seriesInfo name="Internet-Draft" value="draft-haas-idr-bgp-attribute-escape-04"/>
    
     <author fullname="Jeffrey Haas" initials="J." surname="Haas">
     <!-- initials should not include an initial for the surname -->
@@ -33,20 +33,13 @@
     <!-- Can have more than one author -->
       
     <!-- all of the following elements are optional -->
-      <organization>Juniper Networks</organization>
+      <organization>HPE</organization>
       <address>
-        <postal>
-          <street>1133 Innovation Way</street>
-          <city>Sunnyvale</city>
-          <region>CA</region>
-          <code>94089</code>
-          <country>USA</country>
-        </postal>        
-        <email>jhaas@juniper.net</email>  
+        <email>jeffrey.haas@hpe.com</email>  
       </address>
     </author>
    
-    <date year="2025"/>
+    <date year="2026"/>
 
     <area>Routing</area>
     <workgroup>Inter-Domain Routing</workgroup>
@@ -463,8 +456,26 @@
           </t>
 
           <t>
-            An example of this methodology is the BGP Router Capabilities
-            Attribute <xref target="I-D.ietf-idr-entropy-label"/>.
+            An example of this methodology is the BGP Next Hop Dependent
+            Characteristics Attribute <xref target="I-D.ietf-idr-nhc"/>.
+          </t>
+        </section>
+
+        <section>
+          <name>Code Point Scoping</name>
+          <t>
+            When protocol extensions make use of registered code points from
+            designated ranges, filtering can be done by leveraging the
+            semantics of such ranges.  As an example, default filtering of
+            features with private use <xref target="RFC8126" section="4.1"/> or
+            experimental use <xref target="RFC8126" section="4.2"/> code points
+            might be advantageous.
+          </t>
+          <t>
+            Features that have specific semantics where default filtering of
+            specific code points can assist in avoiding escape or inadvertant
+            use SHOULD include such criteria in the protocol procedures, 
+            Operational and Security Considerations.
           </t>
         </section>
 
@@ -540,11 +551,12 @@
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7606.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7999.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8092.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8126.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8669.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9012.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9234.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-bgp-attribute-announcement.xml"/>
-        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-entropy-label.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-nhc"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-wide-bgp-communities.xml"/>
       </references>
     </references>
