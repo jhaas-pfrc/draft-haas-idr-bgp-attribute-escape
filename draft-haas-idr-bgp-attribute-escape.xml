@@ -203,6 +203,14 @@
           "escape".
         </t>
         <t>
+	  Escapes may happen for a number of reasons:
+        </t>
+	<ul>
+	  <li>Operational error.</li>
+	  <li>Implementation defects.</li>
+	  <li>Protocol design or incremental deployment issues.</li>
+	</ul>
+        <t>
           A first example of escape are Path Attributes for new features that are
           intended to be dropped at eBGP boundaries. That is, the feature is
           intra-AS only.  An example of such expected filtering is the BGP
