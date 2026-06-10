@@ -144,19 +144,20 @@
         forwarding loops.
       </t>
       <t>
-        A consequence of this point is that any new feature that alters
-        route selection needs to be consistently deployed within an 
-        AS.  In most circumstances, this is true for the full scope of BGP
-        route propagation where the next hop is unchanged.  Thus, this
-        applies to BGP Confederations <xref target="RFC5065"/> as well.
+	New features that alter route selection need to be evaluated for
+	consistent deployment within an AS.  In most circumstances, this is
+	true for the full scope of BGP route propagation where the next hop is
+	unchanged.  Thus, this applies to BGP Confederations
+	<xref target="RFC5065"/> as well.
       </t>
       <t>
-        Non-transitive Path Attributes can be helpful for features that
-        impact route selection.  A consequence of their behavior is that
-        once a route containing a non-transitive Path Attribute reaches a
-        BGP speaker that is ignorant of its behavior, that attribute will be
-        dropped.  An example of this behavior is used in the AIGP <xref
-        target="RFC7311"/> feature. 
+	To ensure consistent route selection, Non-transitive Path Attributes
+	that impact route selection need to be consistently deployed.  Once a
+	route containing a non-transitive Path Attribute reaches a BGP speaker
+	that is ignorant of its behavior, that attribute will be dropped.  This
+	prevents escape of that Path Attribute via BGP speakers ignorant of the
+	feature.  An example of this behavior is used in the AIGP
+	<xref target="RFC7311"/> feature. 
       </t>
     </section>
 
@@ -166,15 +167,20 @@
       <section>
         <name>Attribute Scoping</name>
         <t>
-          Propagation scope is typically described as part of a BGP protocol
-          extension's procedures.  A common scoping boundary is intra-AS
-          only; for example, drop at eBGP boundaries. BGP Capabilities <xref
-          target="RFC5492"/> can also provide the ability to signal a
-          scoping boundary.  Another implicit scoping boundary are features
-          that are AFI/SAFI specific (<xref target="RFC4760"/>); the scope
-          is the contiguous domain of all devices that participate in that
-          AFI/SAFI.
-        </t>
+	  The propagation scope of BGP attributes is typically described as
+	  part of a BGP protocol extension's procedures.  The procedures are
+	  often BGP session-specific. Common scoping boundaries include:
+	</t>
+
+	<ul>
+	  <li>Intra-AS only; for example, drop at eBGP boundaries.</li>
+	  <li>Features that are AFI/SAFI specific (<xref target="RFC4760"/>);
+	  the scope is the contiguous domain of all devices that participate in
+	  that AFI/SAFI.</li>
+	  <li>BGP Capabilities <xref target="RFC5492"/> can also provide the
+	  ability to signal a scoping boundary.</li>
+        </ul>
+
         <t>
           Non-transitive Path Attributes cannot be propagated outside of the
           scope of the set of BGP speakers that understand them.  If such a
@@ -215,7 +221,7 @@
         </t>
         <t>
           A second example of escape is when attributes are expected to
-          change at next hop reset boundaries.  While this is typically the
+          be evaluated at next hop reset boundaries.  While this is typically the
           case for eBGP, this could be done elsewhere within a network
           by configuration.  One example of this is the BGP Entropy Label
           feature <xref target="RFC6790"/>.  A second example is the BGP
@@ -223,7 +229,7 @@
         </t>
         <t>
           A third example of escape is when attributes leak across
-          AFI/SAFIs.  Layer-3 VPNs <xref target="RFC4364"/> operate by
+          AFI/SAFIs.  For example, Layer-3 VPNs <xref target="RFC4364"/> operate by
           distributing routes learned from customer networks as IPv4 Unicast
           routes through a provider backbone using a different AFI/SAFI.
           Features that are used within the provider network, and attributes
@@ -265,6 +271,9 @@
           understand Extended Communities.
         </t>
         <t>
+	  Communities used by an operator for internal purposes 
+        </t>
+        <t>
           In general, while BGP community features are well-deployed and
           well understood, they may have similar escape issues.  
           <xref target="RFC7454" section="11"/> offers some guidance on
@@ -272,7 +281,7 @@
         </t>
       </section>
       <section>
-        <name>Inadvertent Use</name>
+        <name>Inadvertent Use - Receiving and Using Escaped Attributes</name>
 
         <t>
           One of the main, and typically accidental impacts of attribute
@@ -327,6 +336,70 @@
           BGP UPDATE Messages" document, <xref target="RFC7606"/>.
         </t>
       </section>
+
+      <section>
+	<name>BGP Churn Due to Escape</name>
+
+	<t>
+	  BGP's route selection (decision) and dissemination process distributes
+	  the active route for a destination to the BGP speaker's neighbors.  The
+	  distribution of these routes will cause churn in the receiving routing
+	  system as BGP speakers receive the updated route and propagate it. Such
+	  churn, as the system converges over the change, is unfortunate but
+	  expected - however, it is work imposed on the entire system and should
+	  be avoided.  Features such as <xref target="RFC2439">route flap
+	  damping</xref> were created to attempt to mitigate excess amounts of
+	  this churn.
+	</t>
+
+	<t>
+	  BGP attributes that are scoped for internal or limited domain purposes,
+	  and aren't intended to have operational impact outside their
+	  operational scope, can contribute to such operational churn.  As an
+	  example, when two BGP routes to the same destination are processed by a
+	  local BGP speaker, and that speaker will not consider some attributes
+	  in the decision process, changes in those attributes will not impact
+	  the outcome of which route is preferred.
+	</t>
+
+	<t>
+	  Internally scoped attributes that have escaped and may churn externally
+	  can cause the BGP routing system to work to process such "noise"
+	  updates.  An example of this is illustrated in
+	  <xref target="I-D.ietf-sidrops-avoid-rpki-state-in-bgp" section="3.3"/>.
+	</t>
+
+	<t>
+	  General-purpose attributes that have overlapping internal and external
+	  use cases can also cause churn in the BGP routing system.  The most
+	  common example of this is churn due to BGP communities not being
+	  appropriate stripped at an operational boundary. Consider the case
+	  where a service provider tags routes at a network ingress for use
+	  elsewhere in their network for policy purposes.  If these ingress
+	  tagging communities are not stripped when advertising outside of the
+	  network, a receiving provider may see churning paths solely due to the
+	  sending provider's internal route selection changing, perhaps due to
+	  IGP path changes. Thus, even general-purpose attributes may a form of
+	  escape.
+	</t>
+
+	<t>
+	  That said, it's important to understand that, "One person's trash is
+	  another person's treasure."  In the circumstances where some transit
+	  BGP providers have no use for some BGP attributes, those attributes may
+	  nonetheless be useful to a receiving BGP network later in the BGP
+	  route's propagation path.
+	</t>
+
+	<t>
+	  The implicit requirements to address these considerations are:
+	</t>
+
+	  <ul>
+	    <li>New BGP features should be designed to eliminate attribute escape outside of scoped administrative boundaries.</li>
+	    <li>Operators should filter general-purpose attributes to eliminate churning BGP routes that are sent to their neighbors.</li>
+	  </ul>
+      </section>
     </section>
 
     <section>
@@ -337,17 +410,17 @@
 
         <t>
           One strategy to mitigate these sort of issues can be explicit
-          permit lists.  Rather than simply propagate all unknown Path
+          permit lists.  Rather than simply permitting propagation or reception of  all unknown Path
           Attributes, lists of permitted Path Attributes by Attribute Type
-          Code may be propagated through the network.  However, this
+          Code may be provisioned throughout the network.  However, this
           methodology has two strong negative impacts:
         </t>
         <t>
           Similar to running any other large permit list infrastructure, as
           is often seen in large network firewall deployments, maintaining
           the lists themselves can be immensely burdensome at an operational
-          level.  Once a policy has been devised for the deployment, it must
-          be consistent deployed to have good effect.
+          level.  Once a policy has been devised for the deployment, they
+	  should be consistently deployed.
         </t>
         <t>
           Additionally, this methodology is an "attack" on the feature that
@@ -361,8 +434,8 @@
           prevent such new features from being deployed.
         </t>
         <t>
-          Aggressive filtering may be more reasonable in some contexts.  For
-          example, a Layer-3 VPN customer may benefit from aggressive
+          Indiscriminate filtering may be more reasonable in some contexts.  For
+          example, a Layer-3 VPN customer may benefit from Indiscriminate
           default Path Attribute filtering as it provides protection from
           attribute escape from their provider.  However, in cases where
           newer BGP features are desired to be carried across the VPN,
@@ -464,7 +537,7 @@
         <section>
           <name>Code Point Scoping</name>
           <t>
-            When protocol extensions make use of registered code points from
+            When protocol extensions make use of code points from
             designated ranges, filtering can be done by leveraging the
             semantics of such ranges.  As an example, default filtering of
             features with private use <xref target="RFC8126" section="4.1"/> or
@@ -537,6 +610,7 @@
        
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.1997.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2439.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4360.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4364.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4456.xml"/>
@@ -558,18 +632,22 @@
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-bgp-attribute-announcement.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-nhc"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-wide-bgp-communities.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-sidrops-avoid-rpki-state-in-bgp.xml"/>
       </references>
     </references>
-    
+
     <section anchor="Acknowledgements" numbered="false">
       <name>Acknowledgements</name>
+
       <t>Thanks to Greg Skinner for suggested edits on the document.</t>
     </section>
     
     <section anchor="Contributors" numbered="false">
       <name>Contributors</name>
-      <t>TBD</t>
+
+      <t>Bruno deCraene provided review for an early version of this document.</t>
     </section>
+
     
  </back>
 </rfc>
