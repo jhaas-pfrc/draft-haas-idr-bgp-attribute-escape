@@ -243,11 +243,12 @@
           Features that are used within the provider network, and attributes
           attached to those routes that are solely for use within the scope
           of the provider network and not intended for the customer network,
-          need to be filtered when the route is again placed in a customer
-          network context.  However, it's often the case that filtering is
-          not carefully done when leaking the routes back into the customer
-          network (VRF).  Unrecognized Path Attributes may be copied wholly.
-          An example of such a provider-network-only feature is the ATTR_SET
+	  need to be filtered when the route is received from the customer, and
+	  when placed in a customer network context. However, it's often the
+	  case that filtering is not carefully done when leaking the routes
+	  back into the customer network (VRF).  Unrecognized Path Attributes
+	  may be copied wholly.  An example of such a provider-network-only
+	  feature is the ATTR_SET
           <xref target="RFC6368"/>.
         </t>
       </section>
